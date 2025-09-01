@@ -1,0 +1,47 @@
+# Python cache / bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.python-version
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Datasets (too large for GitHub)
+dataset/
+*.csv
+*.tsv
+*.zip
+*.tar
+*.tar.gz
+
+# Model weights / checkpoints (keep them outside Git if large)
+saved_model/
+*.h5
+*.hdf5
+*.ckpt
+*.pt
+*.pth
+
+# Logs and runtime files
+*.log
+*.out
+*.err
+runtime.txt
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
