@@ -20,18 +20,17 @@ dataset/
 *.tar.gz
 
 # Model weights / checkpoints (keep them outside Git if large)
-saved_model/
-*.h5
-*.hdf5
-*.ckpt
-*.pt
-*.pth
+# saved_model/
+# *.h5
+# *.hdf5
+# *.ckpt
+# *.pt
+# *.pth
 
 # Logs and runtime files
 *.log
 *.out
 *.err
-runtime.txt
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
