@@ -8,6 +8,8 @@ from transformers import AutoImageProcessor
 from PIL import Image
 import io
 
+# uvicorn app:app --reload --port 8000
+
 from train import build_finetuned_model
 from config import MODEL_WEIGHTS_PATH, MODEL_NAME, IMAGE_SIZE
 
