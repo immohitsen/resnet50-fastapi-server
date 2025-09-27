@@ -1,5 +1,5 @@
 import os
-os.environ["TF_USE_LEGACY_KERAS"] = "1"   # fix for Transformers + tf-keras
+os.environ["TF_USE_LEGACY_KERAS"] = "1"
 import tensorflow as tf
 import numpy as np
 from fastapi import FastAPI, UploadFile, File
@@ -8,18 +8,16 @@ from transformers import AutoImageProcessor
 from PIL import Image
 import io
 
-# uvicorn app:app --reload --port 8000
-
 from train import build_finetuned_model
-from config import MODEL_WEIGHTS_PATH, MODEL_NAME, IMAGE_SIZE
+from config import MODEL_WEIGHTS_PATH, MODEL_NAME
 
 # ---- FastAPI App ----
 app = FastAPI(title="Cancer Detection API")
 
-# Allow requests from frontend (Next.js on localhost:3000)
+# Allow requests from frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,16 +30,16 @@ processor = AutoImageProcessor.from_pretrained(MODEL_NAME)
 
 CLASS_LABELS = ["Cancer", "Normal"]
 
-def preprocess(file: UploadFile):
+async def preprocess(file: UploadFile):
     """Convert uploaded file to model input"""
-    image = Image.open(io.BytesIO(file.file.read())).convert("RGB")
-    # HuggingFace AutoImageProcessor handles resizing & normalization
+    contents = await file.read()   # ✨ safer file read
+    image = Image.open(io.BytesIO(contents)).convert("RGB")
     inputs = processor(images=image, return_tensors="np")["pixel_values"]
     return inputs
 
-def predict(file: UploadFile):
+async def predict(file: UploadFile):
     """Run inference"""
-    inputs = preprocess(file)
+    inputs = await preprocess(file)
     preds = model.predict(inputs, verbose=0)
     scores = tf.nn.softmax(preds[0])
     class_index = int(np.argmax(scores))
@@ -57,5 +55,5 @@ def predict(file: UploadFile):
 # ---- API Route ----
 @app.post("/predict")
 async def predict_endpoint(file: UploadFile = File(...)):
-    result = predict(file)
+    result = await predict(file)   # ✨ await added
     return result
