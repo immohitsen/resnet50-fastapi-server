@@ -1,4 +1,4 @@
-tensorflow==2.19.0
+tensorflow==2.20.0
 tf-keras
 torch==2.7.0
 numpy==2.1.3
