@@ -25,12 +25,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---- Load Model & Processor ----
-model = build_finetuned_model()
-model.load_weights(MODEL_WEIGHTS_PATH)
-processor = AutoImageProcessor.from_pretrained(MODEL_NAME)
-
+# ---- Global variables for model ----
+model = None
+processor = None
 CLASS_LABELS = ["Cancer", "Normal"]
+
+@app.on_event("startup")
+async def load_model():
+    global model, processor
+    try:
+        print("🚀 Loading model...")
+        model = build_finetuned_model()
+        model.load_weights(MODEL_WEIGHTS_PATH)
+        processor = AutoImageProcessor.from_pretrained(MODEL_NAME)
+        print("✅ Model loaded successfully!")
+    except Exception as e:
+        print(f"❌ Model loading failed: {e}")
+        model = None
+        processor = None
 
 def preprocess(file: UploadFile):
     """Convert uploaded file to model input"""
@@ -65,5 +77,7 @@ async def health():
 
 @app.post("/predict")
 async def predict_endpoint(file: UploadFile = File(...)):
+    if model is None or processor is None:
+        return {"error": "Model is still loading. Please try again in a few moments."}
     result = predict(file)
     return result
